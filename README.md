@@ -133,6 +133,8 @@ Ejemplo request JSON-RPC:
 ```bash
 # opcional: copiar .env si quieres sobreescribir valores locales
 cp .env.example .env
+# en PowerShell (Windows), equivalente:
+# Copy-Item .env.example .env
 docker compose -f infra/docker-compose.yml up --build -d
 ```
 
