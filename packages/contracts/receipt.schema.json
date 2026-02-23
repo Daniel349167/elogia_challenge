@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/contracts/receipt.schema.json",
+  "title": "ReceiptExtractionResult",
+  "type": "object",
+  "required": ["status", "receipt"],
+  "properties": {
+    "status": { "type": "string", "enum": ["ok", "error"] },
+    "provider": { "type": "string" },
+    "model": { "type": "string" },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "receipt": {
+      "type": "object",
+      "required": ["vendor_name", "currency", "total", "items"],
+      "properties": {
+        "vendor_name": { "type": "string" },
+        "vendor_tax_id": { "type": ["string", "null"] },
+        "receipt_number": { "type": ["string", "null"] },
+        "issue_date": { "type": ["string", "null"], "format": "date" },
+        "currency": { "type": "string" },
+        "subtotal": { "type": ["number", "null"] },
+        "tax": { "type": ["number", "null"] },
+        "total": { "type": "number" },
+        "payment_method": { "type": ["string", "null"] },
+        "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "raw_text": { "type": ["string", "null"] },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["description", "quantity"],
+            "properties": {
+              "description": { "type": "string" },
+              "quantity": { "type": "number" },
+              "unit_price": { "type": ["number", "null"] },
+              "line_total": { "type": ["number", "null"] }
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/contracts/chat.schema.json",
+  "title": "ChatMessageResponse",
+  "type": "object",
+  "required": ["conversation_id", "assistant_message"],
+  "properties": {
+    "conversation_id": { "type": "string" },
+    "assistant_message": { "type": "string" },
+    "receipt_id": { "type": ["string", "null"] },
+    "data": {}
+  },
+  "additionalProperties": false
+}

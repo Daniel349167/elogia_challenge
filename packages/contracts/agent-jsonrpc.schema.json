@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/contracts/agent-jsonrpc.schema.json",
+  "title": "AnalyzeReceiptJsonRpc",
+  "type": "object",
+  "required": ["jsonrpc", "id", "method", "params"],
+  "properties": {
+    "jsonrpc": { "const": "2.0" },
+    "id": { "type": ["string", "integer"] },
+    "method": { "const": "analyze_receipt" },
+    "params": {
+      "type": "object",
+      "required": ["filename", "mime_type", "content_base64"],
+      "properties": {
+        "filename": { "type": "string" },
+        "mime_type": { "type": "string" },
+        "content_base64": { "type": "string" },
+        "text_hint": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

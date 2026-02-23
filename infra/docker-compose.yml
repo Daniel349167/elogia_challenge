@@ -1,0 +1,73 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: receipt-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: receipts_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d receipts_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  agent-analyzer:
+    build:
+      context: ../apps/agent-analyzer
+      dockerfile: Dockerfile
+    container_name: receipt-agent
+    restart: unless-stopped
+    ports:
+      - "8100:8100"
+
+  orchestrator:
+    build:
+      context: ../apps/orchestrator
+      dockerfile: Dockerfile
+    container_name: receipt-orchestrator
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/receipts_db
+      AGENT_URL: http://agent-analyzer:8100/rpc
+      UPLOAD_DIR: /data/uploads
+      CORS_ORIGINS: http://localhost:3000
+      MAX_UPLOAD_BYTES: 8388608
+      ALLOWED_MIME_TYPES: application/pdf,image/png,image/jpeg,image/jpg,text/plain,text/csv,application/octet-stream
+      ALLOWED_EXTENSIONS: .pdf,.png,.jpg,.jpeg,.txt,.csv
+      AGENT_TIMEOUT_SECONDS: 25
+      AGENT_RETRIES: 2
+      AGENT_BACKOFF_SECONDS: 0.5
+    depends_on:
+      db:
+        condition: service_healthy
+      agent-analyzer:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads-data:/data/uploads
+
+  frontend:
+    build:
+      context: ../apps/frontend
+      dockerfile: Dockerfile
+    container_name: receipt-frontend
+    restart: unless-stopped
+    depends_on:
+      orchestrator:
+        condition: service_started
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+
+volumes:
+  db-data:
+  uploads-data:
+
